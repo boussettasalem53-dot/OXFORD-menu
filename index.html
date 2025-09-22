@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Oxford Restaurant</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+/* ---- Global ---- */
+body {margin:0; font-family:'Segoe UI',sans-serif; background:#f8f8f8; color:#333;}
+
+/* ---- HERO (slideshow + fade) ---- */
+.hero {
+  position: relative;
+  height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  text-align: center; color: white; overflow: hidden;
+}
+.slideshow { position:absolute; inset:0; }
+.slide {
+  position:absolute; inset:0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  animation: fade 12s infinite;
+}
+.slide:nth-child(1) { animation-delay: 0s; }
+.slide:nth-child(2) { animation-delay: 4s; }
+.slide:nth-child(3) { animation-delay: 8s; }
+.overlay { position:absolute; inset:0; background: rgba(0,0,0,0.55); z-index: 1; }
+.hero .content { position: relative; z-index: 2; padding: 20px; }
+
+.hero .welcome { font-family: 'Poppins', sans-serif; font-size: 1.1rem; letter-spacing: 3px; margin: 0; opacity: 0.95; text-transform: uppercase; }
+.hero .brand { font-family: 'Playfair Display', serif; font-size: 3.2rem; margin: 8px 0; font-weight: 700; }
+.hero .brand span { color: #ff9800; }
+.hero .slogan { font-family: 'Poppins', sans-serif; margin: 12px 0; font-size: 1.2rem; max-width: 760px; line-height: 1.5; }
+.hero .tagline { font-family: 'Poppins', sans-serif; margin: 8px 0; font-size: 1rem; font-style: italic; color: #ffcc80; }
+
+.hero button { margin-top: 18px; padding: 12px 26px; background: #ff9800; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: 700; transition: 0.25s; box-shadow: 0 6px 18px rgba(0,0,0,0.25);}
+.hero button:hover { transform: translateY(-3px); background:#e68900; }
+
+@keyframes fade {
+  0%, 33% { opacity: 0; }
+  10%, 30% { opacity: 1; }
+  100% { opacity:0; }
+}
+
+/* ---- Header + Menu ---- */
+#menuPage {display:none;}
+header { background: linear-gradient(135deg, #d32f2f, #ff9800); color: #fff; text-align: center; padding: 20px; }
+header h1 {margin:0; font-size:2em;}
+header button {margin-top:10px; padding:8px 15px; background:#fff; color:#d32f2f; border:none; border-radius:8px; cursor:pointer; font-weight:bold;}
+header button:hover {background:#f8f8f8; color:#b71c1c;}
+.category-buttons {display: flex; justify-content: center; gap: 15px; margin: 20px 0; flex-wrap: wrap;}
+.category-buttons button {padding: 10px 20px; background: #d32f2f; color: #fff; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; transition:0.3s;}
+.category-buttons button:hover {background: #b71c1c;}
+.category-buttons button.active {background:#ff9800; color:#fff;}
+
+.menu-container {max-width: 800px; margin: auto; padding: 10px;}
+.item {display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px; margin-bottom: 5px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition:0.3s;}
+.item:hover {transform: scale(1.02);}
+.item-info {max-width: 65%; display:flex; align-items:center; gap:10px;}
+.item-info img {width:60px; height:60px; border-radius:8px; object-fit:cover; transition: transform 0.3s ease; cursor:pointer;}
+.item-info img:hover {transform: scale(1.3);}
+.item-info h3 {margin:0; color:#b71c1c;}
+.quantity {display: flex; align-items: center; gap: 5px;}
+.quantity button {padding: 5px 10px; background: #d32f2f; color: #fff; border: none; border-radius: 5px; cursor: pointer;}
+.quantity input {width: 40px; text-align: center; border-radius: 5px; border: 1px solid #ccc;}
+.order-panel {max-width: 800px; margin: 20px auto; background: #fff; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
+.order-panel h2 {text-align: center; color: #d32f2f;}
+.order-panel ul {list-style: none; padding: 0;}
+.order-panel li {display: flex; justify-content: space-between; margin: 5px 0;}
+.total {text-align: right; font-weight: bold; font-size: 1.2em; color: #d32f2f;}
+.order-panel button {width: 100%; margin-top: 15px; padding: 10px; background: #d32f2f; color: #fff; border: none; border-radius: 10px; cursor: pointer;}
+.order-panel button:hover {background: #b71c1c;}
+footer {background: linear-gradient(135deg, #d32f2f, #ff9800); color: #fff; text-align: center; padding: 20px 10px; margin-top: 30px;}
+footer p {margin: 5px 0;}
+
+/* ---- Modal ---- */
+#orderModal {display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center;}
+#orderModal .modal-content { background:white; padding:20px; border-radius:15px; text-align:center; max-width:400px; width:90%; }
+#orderModal h2 {color:#d32f2f; margin-top:0;}
+#orderSummary {text-align:left; background:#f8f8f8; padding:10px; border-radius:10px; color:#333;}
+#orderModal button { margin-top:15px; padding:10px 20px; background: linear-gradient(135deg, #d32f2f, #ff9800); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;}
+#orderModal button:hover {opacity:0.95;}
+
+/* Responsive */
+@media (max-width:600px){
+  .hero .brand { font-size: 2.2rem; }
+  .hero .slogan { font-size: 1rem; max-width: 90%; }
+  .item-info img { width:50px; height:50px;}
+  .quantity input {width:35px;}
+}
+</style>
+</head>
+<body>
+
+<section id="homePage" class="hero">
+  <div class="overlay"></div>
+  <div class="slideshow">
+    <div class="slide" style="background-image: url('https://i.postimg.cc/WFsnkn2G/64832a87.jpg');"></div>
+    <div class="slide" style="background-image: url('https://i.postimg.cc/JHw2vJmt/4062ba70.jpg');"></div>
+    <div class="slide" style="background-image: url('https://i.postimg.cc/kRnp7C6d/9877ea9d.jpg');"></div>
+  </div>
+  <div class="content">
+    <h2 class="welcome">BIENVENUE À</h2>
+    <h1 class="brand">Oxford <span>Restaurant</span></h1>
+    <p class="slogan">Un restaurant exquis et une expérience culinaire inoubliable</p>
+    <p class="tagline">🍽️ More THAN FOOD, IT'S A FEELING</p>
+    <button onclick="openMenu()">VOIR LE MENU</button>
+  </div>
+</section>
+
+<div id="menuPage">
+  <header>
+      <h1>OXFORD MENU</h1>
+      <button onclick="backHome()">Retour à l'accueil</button>
+  </header>
+
+  <div class="category-buttons">
+      <button onclick="showCategory('Pizza', this)">Pizza</button>
+      <button onclick="showCategory('Pizza Tranche', this)">Pizza Tranche</button>
+      <button onclick="showCategory('Baguettes Farcies', this)">Baguettes Farcies</button>
+      <button onclick="showCategory('Makloub', this)">Makloub</button>
+      <button onclick="showCategory('Boissons', this)">Boissons</button>
+  </div>
+
+  <div class="menu-container" id="menu-container"></div>
+
+  <div class="order-panel">
+      <h2>Votre Commande</h2>
+      <ul id="order-list"><li>Aucun plat sélectionné</li></ul>
+      <p class="total" id="total-price">Total: 0 DT</p>
+      <label for="tableNumber" style="font-weight:bold; color:#d32f2f;">Choisissez votre table :</label>
+      <select id="tableNumber" style="margin:10px 0; padding:8px; border-radius:8px; border:1px solid #ccc;">
+        <option value="" disabled selected>-- Choisissez une table --</option>
+        <option value="1">Table 1</option>
+        <option value="2">Table 2</option>
+        <option value="3">Table 3</option>
+        <option value="4">Table 4</option>
+        <option value="5">Table 5</option>
+        <option value="6">Table 6</option>
+        <option value="7">Table 7</option>
+        <option value="8">Table 8</option>
+        <option value="9">Table 9</option>
+        <option value="10">Table 10</option>
+      </select>
+      <button onclick="submitOrder()">Commander</button>
+  </div>
+
+  <footer>
+      <p>Email: contact@oxford.com</p>
+      <p>Téléphone: +216 71 234 567</p>
+      <p>Adresse: 123 Rue de Monastir, Monastir, Tunisie</p>
+  </footer>
+</div>
+
+<div id="orderModal">
+  <div class="modal-content">
+    <h2>🎉 Merci pour votre commande !</h2>
+    <p id="tableNumberDisplay" style="font-weight:bold; color:#ff9800;"></p>
+    <div id="orderSummary"></div>
+    <p style="margin-top:15px; font-size:1.1em; color:#333;">
+      ✅ Votre commande a été confirmée.<br>
+      🍽️ Elle sera servie à votre table dans quelques minutes.<br>
+      Merci d’avoir choisi <span style="color:#d32f2f; font-weight:bold;">Oxford Restaurant</span> ❤️
+    </p>
+    <button onclick="closeModal()">Fermer</button>
+  </div>
+</div>
+
+<!-- 🔔 صوت قصير للتنبيه -->
+<audio id="orderSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_07d82f3c6a.mp3" preload="auto"></audio>
+
+<script>
+const menus = {
+    "Pizza": [
+        {name:"Pizza Oxford", price:17000, img:"https://i.postimg.cc/xc1470Vv/ef52263e.jpg"},
+        {name:"Pizza 4 Fromages", price:15000, img:"https://i.postimg.cc/CZkPD5bg/1cb847cb.jpg"},
+        {name:"Pizza 4 Saisons", price:14000, img:"https://i.postimg.cc/vD3P5pxc/baa7677f.jpg"},
+        {name:"Pizza Calzone", price:15000, img:"https://i.postimg.cc/BLCmYzh7/89e00de2.jpg"},
+        {name:"Pizza Reine", price:14000, img:"https://i.postimg.cc/WFsnkn2G/64832a87.jpg"},
+        {name:"Pizza Carnivora", price:14000, img:"https://i.postimg.cc/4YhBkyL9/67c26de9f.jpg"},
+        {name:"Pizza Napolitaine", price:14000, img:"https://i.postimg.cc/HrC7nLW5/8d0783c8.jpg"},
+        {name:"Pizza Thon", price:13000, img:"https://i.postimg.cc/MM4nS6rn/f0a5bcc5.jpg"},
+        {name:"Pizza Coin Vert", price:13000, img:"https://i.postimg.cc/qzH7X5fH/685bea45.jpg"},
+        {name:"Pizza Végétarienne", price:13000, img:"https://i.postimg.cc/JHVRxG25/ee0c8d4f.jpg"},
+        {name:"Pizza Margerita", price:11000, img:"https://i.postimg.cc/FkyNBht5/9a4021c6.jpg"}
+    ],
+    "Pizza Tranche":[
+        {name:"Pizza Plateau", price:30000, img:"https://i.postimg.cc/DmLvZPSj/26b03437.jpg"},
+        {name:"Pizza 1/2 Plateau", price:15000, img:"https://i.postimg.cc/N5tgr2Tg/c4dcd21c.jpg"},
+        {name:"Pizza Tranchée", price:2400, img:"https://i.postimg.cc/qzGpcBX2/842d3c5d.jpg"}
+    ],
+    "Baguettes Farcies":[
+        {name:"Baguette Farcie Escalope Pané", price:9500, img:"https://i.postimg.cc/JHw2vJmt/4062ba70.jpg"},
+        {name:"Baguette Farcie Escalope", price:9000, img:"https://i.postimg.cc/KKwq3L1Q/6aaf6669.jpg"},
+        {name:"Baguette Farcie Chawarma", price:9000, img:"https://i.postimg.cc/kRdTfmFb/486bbf9c.jpg"},
+        {name:"Baguette Farcie Thon", price:8500, img:"https://i.postimg.cc/YhRdfT4v/2e548e34.jpg"}
+    ],
+    "Makloub":[
+        {name:"Makloub Escalope", price:8000, img:"https://i.postimg.cc/5XkpDvS1/2a4ad77b.jpg"},
+        {name:"Makloub Escalope Pané", price:8000, img:"https://i.postimg.cc/N2YxRxB8/ee4a6c77.jpg"},
+        {name:"Makloub Chawarma", price:8000, img:"https://i.postimg.cc/kRnp7C6d/9877ea9d.jpg"},
+        {name:"Makloub Thon", price:7500, img:"https://i.postimg.cc/xqRZtXhj/c13bc7ef.jpg"}
+    ],
+    "Boissons":[
+    {name:"Coca Cola (24cl)", price:2500, img:"https://i.postimg.cc/qRByVhBB/coca-cola.png"},
+    {name:"Fanta - Orange (24cl)", price:2500, img:"https://i.postimg.cc/3xHk5p7p/fanta-orange.png"},
+    {name:"Boga - Lim (24cl)", price:2500, img:"https://i.postimg.cc/Hx9XZJJD/boga-lim.png"},
+    {name:"Boga - Cidre (24cl)", price:2500, img:"https://i.postimg.cc/4xS2hVj9/boga-cidre.png"},
+    {name:"Eau Minérale 0.5L", price:1500, img:"https://i.postimg.cc/pX7LhZ5c/eau-minerale.png"}
+]
+
+};
+
+let cart = {};
+
+function openMenu(){
+  document.getElementById('homePage').style.display = 'none';
+  document.getElementById('menuPage').style.display = 'block';
+  // اجعل زر "Pizza" نشط افتراضياً
+  const firstBtn = document.querySelector('.category-buttons button');
+  if (firstBtn) firstBtn.classList.add('active');
+  showCategory('Pizza', document.querySelector('.category-buttons button'));
+}
+
+function backHome(){
+  document.getElementById('menuPage').style.display = 'none';
+  document.getElementById('homePage').style.display = 'flex';
+}
+
+function showCategory(category, btn){
+    // update active button
+    document.querySelectorAll('.category-buttons button').forEach(b => b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    else {
+      // حاول اختيار الزر المطابق بالنص لو لم يعطَ btn
+      document.querySelectorAll('.category-buttons button').forEach(b => {
+        if (b.textContent.trim() === category) b.classList.add('active');
+      });
+    }
+
+    const container = document.getElementById('menu-container');
+    container.innerHTML = "";
+    const items = menus[category] || [];
+    items.forEach(item=>{
+        const qty = cart[item.name]?.qty || 0;
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+            <div class="item-info">
+                <img src="${item.img}" alt="${item.name}">
+                <div><h3>${item.name}</h3></div>
+            </div>
+            <div class="quantity">
+                <button onclick="changeQty(this,-1)">-</button>
+                <input type="number" value="${qty}" min="0" data-name="${item.name}" data-price="${item.price}">
+                <button onclick="changeQty(this,1)">+</button>
+                <span>${(item.price).toLocaleString()} DT</span>
+            </div>
+        `;
+        container.appendChild(div);
+
+        // استمع لتغير القيمة لو المستخدم كتب رقم مباشرة
+        const input = div.querySelector('input');
+        input.addEventListener('change', function(){
+            let val = parseInt(this.value);
+            if (isNaN(val) || val < 0) { val = 0; this.value = 0; }
+            const name = this.dataset.name;
+            const price = parseInt(this.dataset.price);
+            cart[name] = {qty: val, price: price};
+            if (val === 0) delete cart[name];
+            updateOrder();
+        });
+    });
+    updateOrder();
+}
+
+function changeQty(btn, delta){
+    const input = btn.parentElement.querySelector('input');
+    let val = parseInt(input.value);
+    if (isNaN(val)) val = 0;
+    val += delta;
+    if(val<0) val=0;
+    input.value=val;
+    const name = input.dataset.name;
+    const price = parseInt(input.dataset.price);
+    cart[name] = {qty: val, price: price};
+    if(val===0) delete cart[name];
+    updateOrder();
+}
+
+function updateOrder(){
+    const orderList = document.getElementById('order-list');
+    const totalElem = document.getElementById('total-price');
+    orderList.innerHTML = '';
+    let total = 0;
+    if(Object.keys(cart).length===0){
+        orderList.innerHTML='<li>Aucun plat sélectionné</li>';
+        totalElem.textContent=`Total: 0 DT`;
+        return;
+    }
+    for(let name in cart){
+        const {qty, price} = cart[name];
+        const li = document.createElement('li');
+        li.textContent = `${name} x ${qty}`;
+        const span = document.createElement('span');
+        span.textContent = `${(qty*price).toLocaleString()} DT`;
+        li.appendChild(span);
+        orderList.appendChild(li);
+        total += qty*price;
+    }
+    totalElem.textContent=`Total: ${total.toLocaleString()} DT`;
+}
+
+function submitOrder(){
+    if(Object.keys(cart).length===0){
+        alert('Veuillez sélectionner au moins un plat.');
+        return;
+    }
+    const tableNum = document.getElementById("tableNumber").value;
+    if(!tableNum){
+        alert("Veuillez choisir un numéro de table !");
+        return;
+    }
+
+    let summary = "<ul style='text-align:left; padding:0; list-style:none;'>";
+    let total = 0;
+    for(let name in cart){
+        const {qty, price} = cart[name];
+        summary += `<li>🍕 ${name} x ${qty} = <b>${(qty*price).toLocaleString()} DT</b></li>`;
+        total += qty*price;
+    }
+    summary += `</ul><p style="text-align:right; font-weight:bold; color:#d32f2f;">Total: ${total.toLocaleString()} DT</p>`;
+
+    document.getElementById('orderSummary').innerHTML = summary;
+    document.getElementById('tableNumberDisplay').textContent = `Table choisie : ${tableNum}`;
+    document.getElementById('orderModal').style.display = 'flex';
+
+    // 🔔 تشغيل صوت قصير (التأكد من رفض الوعود)
+    const snd = document.getElementById('orderSound');
+    if (snd) {
+      const p = snd.play();
+      if (p !== undefined) {
+        p.catch(err => {
+          // ممكن يمنع المتصفح التشغيل التلقائي بدون تفاعل، لكن هنا نأتي من نقرة المستخدم لذلك غالباً سيفعل
+          console.warn('Audio play failed:', err);
+        });
+      }
+    }
+
+    // إعادة تهيئة السلة وواجهة المستخدم
+    cart = {};
+    updateOrder();
+    document.querySelectorAll('.quantity input').forEach(inp => inp.value = 0);
+    document.getElementById("tableNumber").selectedIndex = 0;
+}
+
+function closeModal(){
+    document.getElementById('orderModal').style.display = 'none';
+}
+</script>
+</body>
+</html>
